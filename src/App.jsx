@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import ziXingQuestions from "./data/ziXingQuestions";
 import ziYiQuestions from "./data/ziYiQuestions";
+import KaodianPractice from "./KaodianPractice";
 
 export default function App() {
+  const [appMode, setAppMode] = useState("quiz"); // "quiz" | "kaodian"
   const [category, setCategory] = useState("ziXing");
   const [isTeacherMode, setIsTeacherMode] = useState(false);
   const [testMode, setTestMode] = useState("original");
@@ -68,6 +70,25 @@ export default function App() {
               <span className="mr-1">✦</span>
               魔法學園<span className="mx-1" style={{ color: "var(--gold)" }}>・</span>{categoryLabel}測驗
             </h1>
+            {/* 模式切換 */}
+            <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: "var(--gold)" }}>
+              {[
+                { key: "quiz", label: "✦ 測驗" },
+                { key: "kaodian", label: "✦ 考點練習" },
+              ].map(m => (
+                <button
+                  key={m.key}
+                  onClick={() => setAppMode(m.key)}
+                  className="px-3 py-1 text-xs font-bold transition-all"
+                  style={{
+                    background: appMode === m.key ? "var(--gold)" : "var(--gold-light)",
+                    color: appMode === m.key ? "#fff" : "var(--gold)",
+                  }}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => setIsTeacherMode(!isTeacherMode)}
               className="px-3 py-1 rounded-full text-xs font-bold border-2 transition-all"
@@ -82,6 +103,7 @@ export default function App() {
           </div>
 
           {/* 操作列 */}
+          {appMode === "quiz" && (
           <div className="flex flex-wrap items-center gap-2">
             {/* 題庫分類 */}
             <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: "var(--gold)" }}>
@@ -141,9 +163,12 @@ export default function App() {
               </button>
             )}
           </div>
+          )}
         </div>
       </header>
 
+      {appMode === "quiz" && (
+      <>
       {/* ─── 成績橫幅 ─── */}
       {showResults && !isTeacherMode && (
         <div className="max-w-3xl mx-auto mt-6 px-4">
@@ -208,8 +233,8 @@ export default function App() {
           let cardBorder = "var(--card-border)";
           let cardBg = "var(--card-bg)";
           if (showResults && userAns) {
-            cardBorder = isCorrect ? "#86efac" : "#fca5a5";
-            cardBg = isCorrect ? "#f0fdf4" : "#fef2f2";
+            cardBorder = isCorrect ? "var(--correct)" : "var(--wrong)";
+            cardBg = isCorrect ? "var(--correct-light)" : "var(--wrong-light)";
           }
 
           return (
@@ -258,11 +283,11 @@ export default function App() {
                     fontWeight = "bold";
                   } else if (showResults) {
                     if (isSelected && isCorrect) {
-                      bg = "#dcfce7"; border = "#22c55e"; color = "#166534"; fontWeight = "bold";
+                      bg = "var(--correct-light)"; border = "var(--correct)"; color = "var(--correct)"; fontWeight = "bold";
                     } else if (isSelected && !isCorrect) {
-                      bg = "#fef2f2"; border = "#ef4444"; color = "#b91c1c"; fontWeight = "bold"; textDecoration = "line-through"; opacity = "0.8";
+                      bg = "var(--wrong-light)"; border = "var(--wrong)"; color = "var(--wrong)"; fontWeight = "bold"; textDecoration = "line-through"; opacity = "0.8";
                     } else if (isAnswer) {
-                      bg = "#dcfce7"; border = "#22c55e"; color = "#166534"; fontWeight = "600";
+                      bg = "var(--correct-light)"; border = "var(--correct)"; color = "var(--correct)"; fontWeight = "600";
                     } else {
                       opacity = "0.45";
                     }
@@ -308,6 +333,9 @@ export default function App() {
           );
         })}
       </div>
+      </>
+      )}
+      {appMode === "kaodian" && <KaodianPractice />}
     </div>
   );
 }
