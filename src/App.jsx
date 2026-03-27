@@ -42,6 +42,13 @@ export default function App() {
     setShowResults(true);
   };
 
+  const handleReshuffle = () => {
+    const shuffled = [...activeBank].sort(() => 0.5 - Math.random());
+    setCurrentQuestions(shuffled.slice(0, 20));
+    setSelectedAnswers({});
+    setShowResults(false);
+  };
+
   const score = useMemo(() => {
     if (!showResults) return null;
     let correct = 0;
@@ -103,6 +110,15 @@ export default function App() {
               <option value="original">全部 {activeBank.length} 題</option>
               <option value="random">隨機抽 20 題</option>
             </select>
+            {/* Reshuffle (random mode only, before submit) */}
+            {!isTeacherMode && !showResults && testMode === "random" && (
+              <button
+                onClick={handleReshuffle}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold shadow hover:shadow-lg transition-all hover:scale-105"
+              >
+                🎲 重新抽題
+              </button>
+            )}
             {/* Submit */}
             {!isTeacherMode && !showResults && (
               <button
@@ -133,6 +149,17 @@ export default function App() {
             >
               重新作答
             </button>
+            {testMode === "random" && (
+              <div className="mt-4 pt-4 border-t border-white/30">
+                <div className="text-xs opacity-70 mb-2">想繼續挑戰嗎？</div>
+                <button
+                  onClick={handleReshuffle}
+                  className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-sm font-bold shadow-lg shadow-amber-500/40 hover:shadow-xl hover:scale-105 transition-all"
+                >
+                  🎲 再抽 20 題
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
