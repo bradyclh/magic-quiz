@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+:root {
+  --parchment: #f7f2e9;
+  --parchment-light: #fdfaf4;
+  --ink: #1a1a2e;
+  --ink-light: #2d2d44;
+  --ink-muted: #6b6b80;
+  --vermillion: #c23b22;
+  --vermillion-light: #e8d5d0;
+  --gold: #b8860b;
+  --gold-light: #f5e6c8;
+  --teal: #1a6b6a;
+  --teal-light: #d0e8e7;
+  --card-bg: #fffef7;
+  --card-border: #e8e0d0;
+}
+
+* {
+  font-family: 'LXGW WenKai TC', 'Noto Serif TC', serif;
+}
+
+body {
+  background: var(--parchment);
+  color: var(--ink);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(184, 134, 11, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(194, 59, 34, 0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8860b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* 標題字型 */
+.font-display {
+  font-family: 'Noto Serif TC', serif;
+}
+
+/* 題目卡片入場動畫 */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.question-card {
+  animation: card-enter 0.4s ease-out both;
+}
+
+/* 選項 hover 效果 */
+.option-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.option-item:hover {
+  transform: translateX(4px);
+}
+
+/* 成績橫幅光暈 */
+@keyframes shimmer {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.score-glow {
+  animation: shimmer 2.5s ease-in-out infinite;
+}
+
+/* 控制列毛玻璃 */
+.control-bar {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* 解析區塊 */
+.explanation-box {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--parchment-light) 100%);
+  border-left: 4px solid var(--gold);
+}
+
+/* 滾動條美化 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
