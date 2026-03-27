@@ -21,7 +21,7 @@ const kaodianQuestions = {
   ziXing: {
     label: "字形",
     icon: "📝",
-    color: "amber",
+    color: "vermillion",  // 使用 --vermillion 系列
     subcategories: {
       sentenceError: {
         label: "文句偵錯",
@@ -45,7 +45,7 @@ const kaodianQuestions = {
   ziYin: {
     label: "字音",
     icon: "🔊",
-    color: "blue",
+    color: "teal",  // 使用 --teal 系列
     subcategories: {
       mispronounce: { label: "易訛讀字", questions: [...] },
       similarChar: { label: "形近字辨音", questions: [...] },
@@ -55,7 +55,7 @@ const kaodianQuestions = {
   ziYi: {
     label: "字義",
     icon: "💡",
-    color: "green",
+    color: "gold",  // 使用 --gold 系列
     subcategories: {
       singleMeaning: { label: "單一字義比較", questions: [...] },
       fourGroup: { label: "四組單字比較", questions: [...] },
@@ -97,30 +97,84 @@ src/
 └── index.css
 ```
 
+## 設計語言
+
+### 視覺風格：「墨韻書卷」
+
+沿用全站已建立的東方書院風設計系統，確保一致性。
+
+### CSS 變數（已定義於 index.css）
+
+```css
+--parchment: #f7f2e9;        /* 宣紙背景 */
+--parchment-light: #fdfaf4;  /* 淺宣紙 */
+--ink: #1a1a2e;              /* 墨色文字 */
+--ink-light: #2d2d44;        /* 淡墨 */
+--ink-muted: #6b6b80;        /* 輔助文字 */
+--vermillion: #c23b22;       /* 朱砂紅（字形主色） */
+--vermillion-light: #e8d5d0; /* 朱砂淺 */
+--gold: #b8860b;             /* 金色（字義主色、重點） */
+--gold-light: #f5e6c8;       /* 金色淺 */
+--teal: #1a6b6a;             /* 青綠（字音主色） */
+--teal-light: #d0e8e7;       /* 青綠淺 */
+--card-bg: #fffef7;          /* 卡片背景 */
+--card-border: #e8e0d0;      /* 卡片邊框 */
+```
+
+### 字型
+
+- 標題：`font-display` → `'Noto Serif TC', serif`
+- 內文：`'LXGW WenKai TC', 'Noto Serif TC', serif`
+
+### 已定義的 CSS 類別
+
+- `.control-bar` — 控制列毛玻璃效果
+- `.question-card` — 題目卡片入場動畫
+- `.option-item` — 選項 hover 位移效果
+- `.explanation-box` — 解析區塊金色漸層
+- `.score-glow` — 成績光暈動效
+
 ## UI 設計
 
 ### 1. 首頁模式切換
 
-Control Bar 左側（logo 旁）新增切換按鈕：
-- 「📝 測驗模式」/「📖 考點練習」
-- 紫色主題（border-violet-500）
-- 切換時完全替換下方內容
+Control Bar 標題列新增切換按鈕：
+- 「✦ 測驗模式」/「✦ 考點練習」
+- 使用 `--gold` 主色，與題庫分類選擇器風格一致
+- 圓角分段按鈕（rounded-lg + overflow-hidden + border）
+- active 狀態：`background: var(--gold); color: #fff`
+- inactive 狀態：`background: var(--gold-light); color: var(--gold)`
+- 切換時完全替換下方內容（測驗 = 現有，考點 = KaodianPractice）
 
 ### 2. 考點分類頁（KaodianPractice 預設畫面）
 
-- 三大分類區塊：字形（琥珀色）、字音（藍色）、字義（綠色）
-- 每個子分類顯示為按鈕，標示題數
-- 點擊進入練習
+三大分類區塊，各有專屬主色：
+- **字形**（朱砂紅）：border/text 使用 `--vermillion`，bg 使用 `--vermillion-light`
+- **字音**（青綠）：border/text 使用 `--teal`，bg 使用 `--teal-light`
+- **字義**（金色）：border/text 使用 `--gold`，bg 使用 `--gold-light`
+
+每個子分類：
+- 圓角按鈕（rounded-lg），顯示分類名稱和題數
+- hover 效果：`transform: translateY(-2px)` + 加深 boxShadow
+- 使用 `font-display` 標題字型顯示分類名稱
 
 ### 3. 練習模式
 
-- 頂部麵包屑導覽：「📝 字形 › 文句偵錯 ・ 第 1/3 題」
-- 出處標示（如「114 會考」）
-- 四個選項，點選後即時顯示：
-  - 答對：選項變綠，顯示綠色解析框
-  - 答錯：選中選項變紅+刪除線，正確答案變綠，顯示解析
-- 「下一題 →」按鈕
-- 最後一題完成後顯示：成績摘要 + 「返回分類」按鈕
+- **麵包屑導覽**：`ink-muted` 色小字，「📝 字形 › 文句偵錯 ・ 第 1/3 題」
+- **出處標示**：`--gold` 色小字（如「114 會考」）
+- **題幹**：`font-display` 字型，題號使用 `--vermillion` 色
+- **選項**：使用 `.option-item` 類別（含 hover 位移效果）
+  - 預設：`bg: var(--parchment-light); border: var(--card-border)`
+  - 選中：`bg: var(--gold-light); border: var(--gold)`
+  - 答對：`bg: #dcfce7; border: #22c55e`
+  - 答錯：`bg: #fef2f2; border: #ef4444; text-decoration: line-through`
+- **解析**：使用 `.explanation-box` 類別（金色漸層 + 左側金色邊線）
+- **下一題按鈕**：`bg: var(--teal); color: #fff; rounded-full`
+- **完成畫面**：
+  - 墨色漸層背景（同成績橫幅風格）
+  - 使用 `.score-glow` 光暈裝飾
+  - 成績數字使用 `font-display` 大號字
+  - 「返回分類」按鈕 + 「重新練習」按鈕
 
 ## 元件狀態
 
