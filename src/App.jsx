@@ -1,26 +1,37 @@
 import { useState, useEffect, useMemo } from "react";
 import ziXingQuestions from "./data/ziXingQuestions";
-
+import ziYiQuestions from "./data/ziYiQuestions";
 
 const QUESTIONS_PER_PAGE = 7;
 
 export default function App() {
+  const [category, setCategory] = useState("ziXing");
   const [isTeacherMode, setIsTeacherMode] = useState(false);
   const [testMode, setTestMode] = useState("original");
-  const [currentQuestions, setCurrentQuestions] = useState(ziXingQuestions);
+
+  const activeBank = useMemo(() => {
+    if (category === "ziXing") return ziXingQuestions;
+    if (category === "ziYi") return ziYiQuestions;
+    return [
+      ...ziXingQuestions,
+      ...ziYiQuestions.map(q => ({ ...q, id: q.id + ziXingQuestions.length })),
+    ];
+  }, [category]);
+
+  const [currentQuestions, setCurrentQuestions] = useState(activeBank);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     if (testMode === "original") {
-      setCurrentQuestions(ziXingQuestions);
+      setCurrentQuestions(activeBank);
     } else {
-      const shuffled = [...ziXingQuestions].sort(() => 0.5 - Math.random());
+      const shuffled = [...activeBank].sort(() => 0.5 - Math.random());
       setCurrentQuestions(shuffled.slice(0, 20));
     }
     setSelectedAnswers({});
     setShowResults(false);
-  }, [testMode]);
+  }, [testMode, activeBank]);
 
   const handleSelect = (qId, letter) => {
     if (showResults) return;
@@ -41,6 +52,7 @@ export default function App() {
   }, [showResults, selectedAnswers, currentQuestions]);
 
   const totalPages = Math.ceil(currentQuestions.length / QUESTIONS_PER_PAGE);
+  const categoryLabel = category === "ziXing" ? "字形" : category === "ziYi" ? "字義" : "綜合";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-pink-50">
@@ -48,9 +60,29 @@ export default function App() {
       <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-md border-b-2 border-pink-200 px-4 py-3">
         <div className="max-w-4xl mx-auto flex flex-wrap gap-3 items-center justify-between">
           <div className="flex items-center gap-2 text-pink-600 font-bold text-lg">
-            <span className="text-2xl">✨</span> 魔法學園・字形測驗
+            <span className="text-2xl">✨</span> 魔法學園・{categoryLabel}測驗
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            {/* Category Selector */}
+            <div className="flex rounded-lg overflow-hidden border-2 border-amber-300">
+              {[
+                { key: "ziXing", label: "字形篇", bank: ziXingQuestions },
+                { key: "ziYi", label: "字義篇", bank: ziYiQuestions },
+                { key: "all", label: "綜合", bank: [...ziXingQuestions, ...ziYiQuestions] },
+              ].map(({ key, label, bank }) => (
+                <button
+                  key={key}
+                  onClick={() => setCategory(key)}
+                  className={`px-3 py-2 text-sm font-semibold transition-all ${
+                    category === key
+                      ? "bg-amber-400 text-white"
+                      : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                  }`}
+                >
+                  {label}({bank.length})
+                </button>
+              ))}
+            </div>
             {/* Teacher / Student Toggle */}
             <button
               onClick={() => setIsTeacherMode(!isTeacherMode)}
@@ -68,7 +100,7 @@ export default function App() {
               value={testMode}
               onChange={e => setTestMode(e.target.value)}
             >
-              <option value="original">全部 78 題</option>
+              <option value="original">全部 {activeBank.length} 題</option>
               <option value="random">隨機抽 20 題</option>
             </select>
             {/* Submit */}
@@ -109,7 +141,7 @@ export default function App() {
       <div className="max-w-4xl mx-auto mt-6 px-4">
         <div className="text-center mb-6 pb-4 border-b-2 border-pink-200">
           <h1 className="text-2xl font-black text-indigo-900 tracking-wider">
-            ✨ 魔法學園・字形測驗卷 ✨
+            ✨ 魔法學園・{categoryLabel}測驗卷 ✨
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             共 {currentQuestions.length} 題 ・ {isTeacherMode ? "教師解析版" : "學生作答版"}
